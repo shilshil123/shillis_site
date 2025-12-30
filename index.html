@@ -1,416 +1,427 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  User, 
-  MessageSquare, 
-  Camera, 
-  Palette, 
-  BookOpen, 
-  Dog, 
-  Send, 
-  Loader2,
-  Image as ImageIcon,
-  Sparkles,
-  UtensilsCrossed,
-  Clock,
-  ChefHat
-} from 'lucide-react';
-
-const apiKey = ""; // API key is handled by the environment
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
-  const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', text: 'היי שילי! אני העוזר הווירטואלי שלך. שאלו אותי כל דבר עלייך!' }
-  ]);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  
-  const [selfiePreview, setSelfiePreview] = useState(null);
-  const [generatedSelfie, setGeneratedSelfie] = useState(null);
-  const [isImageLoading, setIsImageLoading] = useState(false);
-
-  // Recipes Data
-  const recipes = [
-    {
-      id: 1,
-      title: "פסטה מוקרמת מהחלומות",
-      description: "פסטה ברוטב שמנת פטריות עשיר עם המון גבינה נמתחת.",
-      time: "25 דק'",
-      image: "https://images.unsplash.com/photo-1645112481338-3014556272b7?auto=format&fit=crop&q=80&w=400",
-      ingredients: ["פסטה פנה", "שמנת לבישול", "פטריות טריות", "מוצרלה", "שום ובצל"]
-    },
-    {
-      id: 2,
-      title: "עוגיות שוקולד צ'יפס מושלמות",
-      description: "קריספיות מבחוץ ונימוחות מבפנים, בדיוק כמו שצריך.",
-      time: "15 דק'",
-      image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&q=80&w=400",
-      ingredients: ["חמאה", "סוכר חום", "קמח", "ביצה", "הרבה שוקולד צ'יפס"]
-    },
-    {
-      id: 3,
-      title: "פנקייק אוורירי של בוקר",
-      description: "המתכון הסודי שלי לפנקייקים הכי תפוחים שיש.",
-      time: "10 דק'",
-      image: "https://images.unsplash.com/photo-1567620905732-2d1ec7bb7445?auto=format&fit=crop&q=80&w=400",
-      ingredients: ["חלב", "קמח תופח", "סוכר וניל", "סירופ מייפל מעל"]
-    }
-  ];
-
-  // --- AI Chat Logic ---
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || isChatLoading) return;
-
-    const userMessage = chatInput;
-    setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setChatInput('');
-    setIsChatLoading(true);
-
-    const systemPrompt = `
-      אתה העוזר האישי של שילת אסולין (שילי). 
-      פרטים על שילי:
-      - בת 12, לומדת באולפנה.
-      - אוהבת מאוד לצייר ולכתוב סיפורים.
-      - החברה הכי טובה שלה היא שירז אלפה.
-      - יש לה כלב חמוד בשם טוי.
-      ענה על שאלות בצורה ידידותית, קלילה וצעירה.
-    `;
-
-    try {
-      let response;
-      let retries = 0;
-      const delays = [1000, 2000, 4000, 8000, 16000];
-
-      while (retries < 5) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: userMessage }] }],
-              systemInstruction: { parts: [{ text: systemPrompt }] }
-            })
-          });
-          response = await res.json();
-          if (res.ok) break;
-        } catch (e) {
-          retries++;
-          if (retries === 5) throw e;
-          await new Promise(r => setTimeout(r, delays[retries-1]));
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שילת אסולין - האתר הרשמי</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%);
+            min-height: 100vh;
         }
-      }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 2rem;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .star-rating .star {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .star-rating .star:hover {
+            transform: scale(1.2);
+        }
+        .dog-svg, .avatar-svg {
+            max-width: 250px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
 
-      const aiText = response.candidates?.[0]?.content?.parts?.[0]?.text || "סליחה שילי, אני קצת עמוס כרגע, נסה שוב!";
-      setChatMessages(prev => [...prev, { role: 'assistant', text: aiText }]);
-    } catch (error) {
-      setChatMessages(prev => [...prev, { role: 'assistant', text: "משהו השתבש בחיבור. נסי שוב מאוחר יותר!" }]);
-    } finally {
-      setIsChatLoading(false);
-    }
-  };
-
-  // --- Image to Image (Selfie) Logic ---
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setSelfiePreview(reader.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const generateSelfie = async () => {
-    if (!selfiePreview || isImageLoading) return;
-    setIsImageLoading(true);
-
-    const base64Data = selfiePreview.split(',')[1];
-    const prompt = "Please create a fun selfie of a 12-year-old girl named Shilat (modest clothing, smiling) standing next to the person in this photo. They are both smiling at the camera in a friendly, high-quality digital art style.";
-
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              { inlineData: { mimeType: "image/png", data: base64Data } }
-            ]
-          }],
-          generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-        })
-      });
-
-      const result = await res.json();
-      const generatedBase64 = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-      
-      if (generatedBase64) {
-        setGeneratedSelfie(`data:image/png;base64,${generatedBase64}`);
-      }
-    } catch (error) {
-      console.error("Image error:", error);
-    } finally {
-      setIsImageLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-pink-50 text-gray-800 font-sans p-4 flex flex-col items-center pb-12" dir="rtl">
-      {/* Header */}
-      <header className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-6 mb-6 flex flex-col items-center justify-between gap-6 border-b-4 border-pink-200">
-        <div className="flex items-center gap-4 w-full">
-          <div className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full flex items-center justify-center text-white shadow-lg overflow-hidden border-2 border-white">
-            <User size={32} />
-          </div>
-          <div className="flex-grow">
-            <h1 className="text-2xl md:text-3xl font-bold text-pink-600">שילת אסולין ✨</h1>
-            <p className="text-gray-500 text-sm">המרחב היצירתי שלי</p>
-          </div>
-        </div>
-        
-        <nav className="flex flex-wrap justify-center gap-2 w-full border-t border-pink-50 pt-4">
-          {[
-            { id: 'home', label: 'בית', icon: <User size={18} /> },
-            { id: 'recipes', label: 'מתכונים', icon: <UtensilsCrossed size={18} /> },
-            { id: 'chat', label: 'עוזר AI', icon: <MessageSquare size={18} /> },
-            { id: 'selfie', label: 'סלפי איתי', icon: <Camera size={18} /> },
-          ].map((tab) => (
-            <button 
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full transition-all flex items-center gap-2 text-sm font-medium ${
-                activeTab === tab.id 
-                ? 'bg-pink-500 text-white shadow-md scale-105' 
-                : 'bg-white text-pink-700 border border-pink-100 hover:bg-pink-50'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </header>
-
-      {/* Main Content */}
-      <main className="w-full max-w-4xl flex-grow">
-        
-        {/* Home Tab */}
-        {activeTab === 'home' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-500">
-            <div className="bg-white p-8 rounded-3xl shadow-md space-y-6 relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Palette size={100} />
-              </div>
-              <h2 className="text-2xl font-bold flex items-center gap-2 text-pink-600">
-                <Palette className="text-pink-400" /> היי, אני שילי!
-              </h2>
-              <p className="leading-relaxed text-lg">
-                אני בת 12, לומדת באולפנה ומכורה ליצירה. כשאני לא מציירת או כותבת סיפורים, אני בטח משחקת עם <strong>טוי</strong> הכלב שלי או מבלה עם <strong>שירז אלפה</strong>.
-              </p>
-              <div className="grid grid-cols-2 gap-4 pt-4 text-center">
-                <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100">
-                  <Dog className="mx-auto text-pink-500 mb-1" size={24} />
-                  <span className="text-sm font-bold block">טוי</span>
-                  <span className="text-xs text-gray-500">החבר הכי טוב</span>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-2xl border border-purple-100">
-                  <User className="mx-auto text-purple-500 mb-1" size={24} />
-                  <span className="text-sm font-bold block">שירז</span>
-                  <span className="text-xs text-gray-500">החברה הכי טובה</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white p-6 rounded-3xl shadow-md flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-default">
-                <div className="bg-orange-100 p-3 rounded-2xl">
-                  <BookOpen className="text-orange-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold">כתיבת סיפורים</h3>
-                  <p className="text-sm text-gray-500">המילים הן הדרך שלי לחלום</p>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-md flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-default">
-                <div className="bg-green-100 p-3 rounded-2xl">
-                  <Palette className="text-green-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold">ציור ואומנות</h3>
-                  <p className="text-sm text-gray-500">מבטאת רגשות דרך צבעים</p>
-                </div>
-              </div>
-              <div className="bg-white p-6 rounded-3xl shadow-md flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-default">
-                <div className="bg-blue-100 p-3 rounded-2xl">
-                  <ChefHat className="text-blue-500" />
-                </div>
-                <div>
-                  <h3 className="font-bold">בישול ואפייה</h3>
-                  <p className="text-sm text-gray-500">כי מי לא אוהבת משהו מתוק?</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Recipes Tab */}
-        {activeTab === 'recipes' && (
-          <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="text-center bg-white p-8 rounded-3xl shadow-sm border border-pink-100">
-              <h2 className="text-3xl font-bold text-pink-600 mb-2">המתכונים הסודיים שלי 🥨</h2>
-              <p className="text-gray-500 italic">כל מה שטעים, קל להכנה ומחמם את הלב</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {recipes.map(recipe => (
-                <div key={recipe.id} className="bg-white rounded-3xl shadow-md overflow-hidden hover:shadow-xl transition-shadow group">
-                  <div className="h-48 overflow-hidden relative">
-                    <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                      <Clock size={12} /> {recipe.time}
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="glass-card p-6 mb-8 shadow-xl">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                        <i data-lucide="user" size="32"></i>
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{recipe.title}</h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{recipe.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {recipe.ingredients.slice(0, 3).map((ing, idx) => (
-                        <span key={idx} className="text-[10px] bg-pink-50 text-pink-600 px-2 py-1 rounded-md border border-pink-100">
-                          {ing}
-                        </span>
-                      ))}
-                      {recipe.ingredients.length > 3 && <span className="text-[10px] text-gray-400 self-center">...</span>}
+                    <div>
+                        <h1 class="text-3xl font-black text-purple-700">שילת אסולין ✨</h1>
+                        <p class="text-pink-400 text-sm font-bold">האתר הרשמי של שילי!</p>
                     </div>
-                  </div>
                 </div>
-              ))}
+                
+                <nav class="flex flex-wrap justify-center gap-2">
+                    <button onclick="showTab('home')" class="nav-btn active px-4 py-2 rounded-xl bg-purple-600 text-white shadow-md flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="home" size="16"></i> בית
+                    </button>
+                    <button onclick="showTab('avatar')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="palette" size="16"></i> אוואטר
+                    </button>
+                    <button onclick="showTab('dog')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="dog" size="16"></i> טוי
+                    </button>
+                    <button onclick="showTab('rating')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="star" size="16"></i> דרגו אותי
+                    </button>
+                    <button onclick="showTab('sounds')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="volume-2" size="16"></i> שקט
+                    </button>
+                    <button onclick="showTab('admin')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="lock" size="16"></i> ניהול
+                    </button>
+                </nav>
             </div>
-          </div>
-        )}
+        </header>
 
-        {/* Chat Tab */}
-        {activeTab === 'chat' && (
-          <div className="bg-white rounded-3xl shadow-xl h-[550px] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 border-2 border-pink-100">
-            <div className="bg-pink-500 p-4 text-white font-bold flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MessageSquare size={20} />
-                <span>צ'אט עם העוזר של שילי</span>
-              </div>
-              <Sparkles size={18} className="animate-pulse" />
-            </div>
-            <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
-              {chatMessages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${
-                    msg.role === 'user' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-none' 
-                    : 'bg-white text-gray-800 rounded-tl-none border border-pink-100'
-                  }`}>
-                    {msg.text}
-                  </div>
+        <!-- Main Content Area -->
+        <main>
+            <!-- Home Tab -->
+            <section id="home" class="tab-content active">
+                <div class="glass-card p-12 text-center mb-8">
+                    <h2 class="text-5xl font-black text-purple-600 mb-4 uppercase">WELCOME</h2>
+                    <p class="text-2xl font-bold text-pink-500 italic">ברוכים הבאים לאתר הרשמי שלי!</p>
                 </div>
-              ))}
-              {isChatLoading && (
-                <div className="flex justify-end">
-                  <div className="bg-white px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2 text-xs text-gray-400">
-                    <Loader2 size={14} className="animate-spin" /> שולח מחשבה...
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="p-4 bg-white border-t flex gap-2">
-              <input 
-                type="text" 
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="שאלו אותי משהו על שילי..."
-                className="flex-grow p-3 px-5 rounded-full border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm"
-              />
-              <button 
-                onClick={handleSendMessage}
-                disabled={isChatLoading}
-                className="bg-pink-500 text-white p-3 rounded-full hover:bg-pink-600 transition-colors shadow-lg disabled:opacity-50"
-              >
-                <Send size={20} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Selfie Tab */}
-        {activeTab === 'selfie' && (
-          <div className="bg-white p-8 rounded-3xl shadow-lg text-center space-y-8 animate-in zoom-in-95 duration-300 border border-pink-100">
-            <div>
-              <h2 className="text-3xl font-bold text-pink-600 flex items-center justify-center gap-3">
-                <Camera size={32} /> בואו נצטלם סלפי!
-              </h2>
-              <p className="text-gray-500 mt-2">העלו תמונה שלכם, ואני (שילי ה-AI) אצטרף אליכם לתמונה משותפת!</p>
-            </div>
-            
-            <div className="flex flex-col md:flex-row items-start justify-center gap-12">
-              <div className="space-y-6 w-full max-w-sm">
-                <div className="aspect-square border-4 border-dashed border-pink-100 rounded-[2.5rem] flex flex-col items-center justify-center relative overflow-hidden bg-pink-50/30 group hover:border-pink-300 transition-colors">
-                  {selfiePreview ? (
-                    <img src={selfiePreview} alt="Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="bg-white p-5 rounded-full shadow-sm text-pink-200 group-hover:text-pink-400 transition-colors">
-                        <ImageIcon size={48} />
-                      </div>
-                      <span className="text-sm font-medium text-pink-300 group-hover:text-pink-500">לחצו להעלאת תמונה</span>
+                <div id="announcements-container" class="space-y-4">
+                    <div class="flex items-center gap-2 px-4">
+                        <i data-lucide="megaphone" class="text-pink-500"></i>
+                        <h3 class="text-xl font-black text-gray-700">הכרזות אחרונות</h3>
                     </div>
-                  )}
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageUpload}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
+                    <div id="announcement-list">
+                        <!-- Announcements will be injected here -->
+                    </div>
                 </div>
-                <button 
-                  onClick={generateSelfie}
-                  disabled={!selfiePreview || isImageLoading}
-                  className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold py-4 rounded-2xl shadow-xl hover:shadow-pink-200/50 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:scale-100"
-                >
-                  {isImageLoading ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
-                  <span>צרו את הסלפי המשותף</span>
-                </button>
-              </div>
+            </section>
 
-              <div className="w-full max-w-sm">
-                {generatedSelfie ? (
-                  <div className="space-y-4 animate-in fade-in zoom-in duration-700">
-                    <div className="aspect-square border-4 border-pink-400 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
-                       <div className="absolute top-4 left-4 bg-white/80 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold text-pink-600 flex items-center gap-1 shadow-sm">
-                         <Sparkles size={10} /> AI GENERATED
-                       </div>
-                      <img src={generatedSelfie} alt="Result" className="w-full h-full object-cover" />
+            <!-- Avatar Tab -->
+            <section id="avatar" class="tab-content">
+                <div class="glass-card p-8 flex flex-col lg:flex-row gap-12">
+                    <div class="flex-1 bg-pink-50 rounded-3xl p-8 flex justify-center items-center shadow-inner">
+                        <div id="avatar-preview">
+                            <svg class="avatar-svg" viewBox="0 0 100 120">
+                                <circle id="av-skin" cx="50" cy="55" r="22" fill="#FFDBAC" />
+                                <path id="av-neck" d="M35 85 Q50 75 65 85 L70 120 L30 120 Z" fill="#FFDBAC" />
+                                <g id="av-eyes"><circle cx="43" cy="55" r="3" fill="black" /><circle cx="57" cy="55" r="3" fill="black" /></g>
+                                <path d="M45 68 Q50 72 55 68" stroke="black" fill="none" strokeWidth="1.5" />
+                                <g id="av-hair-layer"></g>
+                                <g id="av-clothing-layer"></g>
+                                <g id="av-accessory-layer"></g>
+                            </svg>
+                        </div>
                     </div>
-                    <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100">
-                      <p className="text-pink-600 font-bold text-lg">וואו! איזה סלפי יצא לנו! 😍</p>
-                      <p className="text-xs text-pink-400 mt-1">אפשר לשמור את התמונה בלחיצה ימנית</p>
+                    <div class="flex-1 space-y-6">
+                        <h2 class="text-2xl font-black text-purple-700">האוואטר של שילי</h2>
+                        <div class="space-y-4">
+                            <p class="font-bold flex items-center gap-2"><i data-lucide="scissors" size="16"></i> שיער:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('hair', 'long')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">ארוך</button>
+                                <button onclick="setAvatar('hair', 'short')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">קצר</button>
+                                <button onclick="setAvatar('hair', 'curly')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">מתולתל</button>
+                            </div>
+                            <p class="font-bold flex items-center gap-2"><i data-lucide="shirt" size="16"></i> בגד:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('clothing', 'hoodie')" class="px-4 py-2 bg-pink-100 rounded-xl text-xs font-bold">קפוצ'ון</button>
+                                <button onclick="setAvatar('clothing', 'dress')" class="px-4 py-2 bg-pink-100 rounded-xl text-xs font-bold">שמלה</button>
+                            </div>
+                            <p class="font-bold flex items-center gap-2"><i data-lucide="gem" size="16"></i> אקססוריז:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('accessory', 'crown')" class="px-4 py-2 bg-yellow-100 rounded-xl text-xs font-bold">כתר</button>
+                                <button onclick="setAvatar('accessory', 'glasses')" class="px-4 py-2 bg-yellow-100 rounded-xl text-xs font-bold">משקפיים</button>
+                                <button onclick="setAvatar('accessory', 'none')" class="px-4 py-2 bg-gray-100 rounded-xl text-xs font-bold">בלי</button>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="aspect-square bg-gray-50 rounded-[2.5rem] border-2 border-gray-100 flex flex-col items-center justify-center text-gray-300 p-8 text-center">
-                    <Sparkles size={48} className="mb-4 opacity-20" />
-                    <p className="text-sm italic">הסלפי המשותף שלנו יופיע כאן אחרי שתלחצו על הכפתור</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+                </div>
+            </section>
 
-      </main>
+            <!-- Dog Tab -->
+            <section id="dog" class="tab-content">
+                <div class="glass-card p-8 flex flex-col lg:flex-row gap-12">
+                    <div class="flex-1 bg-blue-50 rounded-3xl p-8 flex justify-center items-center">
+                        <svg class="dog-svg" viewBox="0 0 100 100">
+                            <ellipse cx="50" cy="70" rx="30" ry="25" fill="#E5E7EB" id="dog-body" />
+                            <circle cx="50" cy="45" r="25" fill="#E5E7EB" id="dog-head" />
+                            <circle cx="40" cy="40" r="3" fill="black" />
+                            <circle cx="60" cy="40" r="3" fill="black" />
+                            <circle cx="50" cy="48" r="3" fill="black" />
+                            <path d="M30 60 Q50 65 70 60" stroke="#EF4444" fill="none" stroke-width="4" />
+                            <g id="dog-hat-layer"></g>
+                        </svg>
+                    </div>
+                    <div class="flex-1 space-y-6">
+                        <h2 class="text-2xl font-black text-blue-700">טוי המתוק 🐾</h2>
+                        <div class="space-y-4">
+                            <p class="font-bold">צבע פרווה:</p>
+                            <div class="flex gap-2">
+                                <button onclick="setDog('color', '#E5E7EB')" class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></button>
+                                <button onclick="setDog('color', '#D2B48C')" class="w-8 h-8 rounded-full bg-yellow-700 border-2 border-white"></button>
+                                <button onclick="setDog('color', '#8B4513')" class="w-8 h-8 rounded-full bg-amber-900 border-2 border-white"></button>
+                            </div>
+                            <p class="font-bold">כובעים:</p>
+                            <div class="flex gap-2">
+                                <button onclick="setDog('hat', 'crown')" class="px-4 py-2 bg-blue-100 rounded-xl font-bold">כתר</button>
+                                <button onclick="setDog('hat', 'cool')" class="px-4 py-2 bg-blue-100 rounded-xl font-bold">משקפיים</button>
+                                <button onclick="setDog('hat', 'none')" class="px-4 py-2 bg-gray-100 rounded-xl font-bold">בלי</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-      <footer className="mt-12 text-gray-400 text-sm flex flex-col items-center gap-2">
-        <div className="flex items-center gap-2">
-          <span>נבנה באהבה עבור שילת אסולין ❤️</span>
-        </div>
-        <div className="opacity-50 text-[10px]">כל הזכויות שמורות לשילי (אוקטובר 2025)</div>
-      </footer>
+            <!-- Rating Tab -->
+            <section id="rating" class="tab-content">
+                <div class="glass-card p-10 space-y-8">
+                    <div class="text-center">
+                        <h2 class="text-3xl font-black text-yellow-600">דרגו את האתר שלי ⭐</h2>
+                        <p class="text-gray-500 font-bold">הדעה שלכם חשובה לי מאוד!</p>
+                    </div>
+
+                    <div class="max-w-md mx-auto bg-yellow-50/50 p-8 rounded-3xl space-y-6 border border-yellow-100">
+                        <div class="flex justify-center gap-2 star-rating" id="star-input">
+                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(1)"></i>
+                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(2)"></i>
+                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(3)"></i>
+                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(4)"></i>
+                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(5)"></i>
+                        </div>
+                        <textarea id="rating-comment" placeholder="מה חשבתם על האתר?..." class="w-full p-4 rounded-2xl border-2 border-yellow-100 h-24 focus:ring-2 focus:ring-yellow-300 font-bold outline-none"></textarea>
+                        <button onclick="submitRating()" class="w-full bg-yellow-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-yellow-600 transition-colors">שליחת דירוג!</button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-black text-gray-700">מה אחרים אמרו:</h3>
+                        <div id="ratings-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p class="text-gray-400 font-bold text-center col-span-full py-4 italic">עדיין אין דירוגים, תהיו הראשונים לדרג!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sounds Tab -->
+            <section id="sounds" class="tab-content">
+                <div class="glass-card p-10">
+                    <h2 class="text-3xl font-black text-center mb-8 text-purple-700">רגע של שקט 🧘‍♀️</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <button onclick="toggleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', this)" class="sound-btn flex items-center justify-between p-6 bg-white rounded-3xl shadow-md border-2 border-transparent hover:border-purple-200 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="p-4 bg-blue-100 text-blue-600 rounded-2xl"><i data-lucide="cloud-rain"></i></div>
+                                <span class="font-black text-lg">גשם מרגיע</span>
+                            </div>
+                            <i data-lucide="play" class="play-icon"></i>
+                        </button>
+                        <button onclick="toggleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', this)" class="sound-btn flex items-center justify-between p-6 bg-white rounded-3xl shadow-md border-2 border-transparent hover:border-purple-200 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="p-4 bg-cyan-100 text-cyan-600 rounded-2xl"><i data-lucide="waves"></i></div>
+                                <span class="font-black text-lg">גלי ים</span>
+                            </div>
+                            <i data-lucide="play" class="play-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Tab -->
+            <section id="admin" class="tab-content">
+                <div id="admin-login" class="glass-card p-10 max-w-md mx-auto text-center space-y-6">
+                    <i data-lucide="lock" size="48" class="mx-auto text-purple-200"></i>
+                    <h2 class="text-2xl font-black text-purple-700">כניסת עורכת</h2>
+                    <input type="password" id="admin-pass" placeholder="הקישי סיסמה..." class="w-full p-4 rounded-2xl border-2 border-purple-50 text-center font-bold">
+                    <button onclick="checkAdmin()" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-black shadow-lg">כניסה!</button>
+                </div>
+                <div id="admin-panel" class="glass-card p-10 max-w-2xl mx-auto hidden space-y-8">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-3xl font-black text-purple-700 flex items-center gap-2">ניהול האתר <i data-lucide="unlock" class="text-green-500"></i></h2>
+                        <button onclick="logout()" class="text-gray-400 font-bold bg-gray-100 px-4 py-2 rounded-full">יציאה</button>
+                    </div>
+                    <div class="bg-pink-50 p-6 rounded-3xl space-y-4">
+                        <label class="block font-black text-pink-700">כתבי הכרזה חדשה:</label>
+                        <textarea id="new-ann-text" class="w-full p-4 rounded-2xl border-none h-24" placeholder="מה תרצי לכתוב?"></textarea>
+                        <button onclick="addAnnouncement()" class="w-full bg-pink-500 text-white font-black py-4 rounded-2xl">פרסום!</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-12 text-center text-gray-400 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+            SHILAT ASSULIN PORTFOLIO 2025 <i data-lucide="heart" size="12" class="text-pink-300"></i>
+        </footer>
     </div>
-  );
-}
+
+    <audio id="global-audio" loop></audio>
+
+    <script>
+        // State Management
+        let currentRating = 0;
+        let announcements = [{ text: "ברוכים הבאים לאתר החדש שלי! תהנו מהעיצובים!", date: "30/12/2025" }];
+        let ratings = [];
+        const adminPass = "6666";
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-purple-500');
+            });
+            event.currentTarget.classList.add('bg-purple-600', 'text-white', 'shadow-md');
+            event.currentTarget.classList.remove('bg-white', 'text-purple-500');
+        }
+
+        // Avatar Logic
+        const hairStyles = {
+            long: '<path d="M30 40 Q50 10 70 40 L75 90 Q50 85 25 90 Z" fill="#4B2C20" />',
+            short: '<path d="M35 35 Q50 15 65 35 L68 50 Q50 45 32 50 Z" fill="#4B2C20" />',
+            curly: '<path d="M30 40 Q35 25 50 25 Q65 25 70 40 Q75 50 70 60 Q65 70 50 70 Q35 70 30 60 Q25 50 30 40" fill="#4B2C20" />'
+        };
+        const clothingStyles = {
+            hoodie: '<path d="M25 85 L75 85 L80 120 L20 120 Z M40 85 L50 100 L60 85" fill="#EC4899" />',
+            dress: '<path d="M35 85 L65 85 L85 140 L15 140 Z" fill="#EC4899" />'
+        };
+        const accStyles = {
+            crown: '<text x="42" y="30" font-size="14">👑</text>',
+            glasses: '<path d="M38 55 H48 M52 55 H62 M48 55 Q50 55 52 55" stroke="black" fill="none" stroke-width="1" />',
+            none: ''
+        };
+
+        function setAvatar(type, value) {
+            if(type === 'hair') document.getElementById('av-hair-layer').innerHTML = hairStyles[value];
+            if(type === 'clothing') document.getElementById('av-clothing-layer').innerHTML = clothingStyles[value];
+            if(type === 'accessory') document.getElementById('av-accessory-layer').innerHTML = accStyles[value];
+        }
+        // Defaults
+        setAvatar('hair', 'long');
+        setAvatar('clothing', 'hoodie');
+
+        // Dog Logic
+        function setDog(type, value) {
+            if(type === 'color') {
+                document.getElementById('dog-body').setAttribute('fill', value);
+                document.getElementById('dog-head').setAttribute('fill', value);
+            }
+            if(type === 'hat') {
+                const layer = document.getElementById('dog-hat-layer');
+                if(value === 'crown') layer.innerHTML = '<text x="40" y="35" font-size="18">👑</text>';
+                else if(value === 'cool') layer.innerHTML = '<text x="35" y="45" font-size="15">🕶️</text>';
+                else layer.innerHTML = '';
+            }
+        }
+
+        // Rating Logic
+        function setRating(val) {
+            currentRating = val;
+            const stars = document.querySelectorAll('#star-input i');
+            stars.forEach((s, i) => {
+                if(i < val) {
+                    s.classList.add('fill-yellow-400', 'text-yellow-400');
+                    s.classList.remove('text-gray-300');
+                } else {
+                    s.classList.remove('fill-yellow-400', 'text-yellow-400');
+                    s.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function submitRating() {
+            const comment = document.getElementById('rating-comment').value;
+            if(currentRating === 0) return;
+            
+            ratings.unshift({ stars: currentRating, comment: comment, date: "עכשיו" });
+            updateRatingsUI();
+            
+            // Reset
+            currentRating = 0;
+            document.getElementById('rating-comment').value = '';
+            setRating(0);
+        }
+
+        function updateRatingsUI() {
+            const list = document.getElementById('ratings-list');
+            if(ratings.length === 0) return;
+            
+            list.innerHTML = ratings.map(r => `
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm animate-in fade-in">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-black text-purple-600">אורח/ת</span>
+                        <div class="flex text-yellow-400">
+                            ${Array(r.stars).fill('<i data-lucide="star" class="fill-current" size="14"></i>').join('')}
+                        </div>
+                    </div>
+                    <p class="text-gray-600 font-bold">${r.comment}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Audio Logic
+        let isPlaying = false;
+        function toggleAudio(url, btn) {
+            const audio = document.getElementById('global-audio');
+            const icon = btn.querySelector('.play-icon');
+            
+            if(audio.src === url && !audio.paused) {
+                audio.pause();
+                icon.setAttribute('data-lucide', 'play');
+            } else {
+                audio.src = url;
+                audio.play();
+                document.querySelectorAll('.play-icon').forEach(i => i.setAttribute('data-lucide', 'play'));
+                icon.setAttribute('data-lucide', 'pause');
+            }
+            lucide.createIcons();
+        }
+
+        // Admin Logic
+        function checkAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === adminPass) {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+            }
+        }
+        function logout() {
+            document.getElementById('admin-login').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-pass').value = '';
+        }
+
+        function addAnnouncement() {
+            const text = document.getElementById('new-ann-text').value;
+            if(!text) return;
+            announcements.unshift({ text: text, date: "היום" });
+            updateAnnouncementsUI();
+            document.getElementById('new-ann-text').value = '';
+        }
+
+        function updateAnnouncementsUI() {
+            const list = document.getElementById('announcement-list');
+            list.innerHTML = announcements.map(a => `
+                <div class="bg-white p-6 rounded-2xl shadow-md border-r-8 border-pink-400 mb-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-lg font-bold text-purple-800">${a.text}</p>
+                        <span class="text-gray-400 text-xs">${a.date}</span>
+                    </div>
+                    <i data-lucide="sparkles" class="text-pink-200"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Init
+        updateAnnouncementsUI();
+
+    </script>
+</body>
+</html>
