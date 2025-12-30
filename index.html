@@ -30,16 +30,22 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .star-rating .star {
-            cursor: pointer;
-            transition: transform 0.2s;
+        .nav-btn.active {
+            background-color: #9333ea;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
-        .star-rating .star:hover {
-            transform: scale(1.2);
-        }
-        .dog-svg, .avatar-svg {
+        .avatar-svg, .dog-svg {
             max-width: 250px;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+        .btn-option {
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .btn-option:hover {
+            transform: scale(1.05);
+            border-color: #d8b4fe;
         }
     </style>
 </head>
@@ -51,377 +57,407 @@
             <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
                 <div class="flex items-center gap-4">
                     <div class="w-16 h-16 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg">
-                        <i data-lucide="user" size="32"></i>
+                        <i data-lucide="star" size="32"></i>
                     </div>
                     <div>
                         <h1 class="text-3xl font-black text-purple-700">שילת אסולין ✨</h1>
-                        <p class="text-pink-400 text-sm font-bold">האתר הרשמי של שילי!</p>
+                        <p class="text-pink-400 text-sm font-bold italic">האתר הרשמי והמעודכן של שילי!</p>
                     </div>
                 </div>
                 
                 <nav class="flex flex-wrap justify-center gap-2">
-                    <button onclick="showTab('home')" class="nav-btn active px-4 py-2 rounded-xl bg-purple-600 text-white shadow-md flex items-center gap-2 text-sm font-bold">
+                    <button onclick="showTab('home', this)" class="nav-btn active px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
                         <i data-lucide="home" size="16"></i> בית
                     </button>
-                    <button onclick="showTab('avatar')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                    <button onclick="showTab('avatar', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
                         <i data-lucide="palette" size="16"></i> אוואטר
                     </button>
-                    <button onclick="showTab('dog')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                    <button onclick="showTab('dog', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
                         <i data-lucide="dog" size="16"></i> טוי
                     </button>
-                    <button onclick="showTab('rating')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
-                        <i data-lucide="star" size="16"></i> דרגו אותי
+                    <button onclick="showTab('jokes', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="laugh" size="16"></i> מעבדת הצחוק
                     </button>
-                    <button onclick="showTab('sounds')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
-                        <i data-lucide="volume-2" size="16"></i> שקט
+                    <button onclick="showTab('selfie', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="camera" size="16"></i> סלפי
                     </button>
-                    <button onclick="showTab('admin')" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                    <button onclick="showTab('ai-assistant', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-purple-500 border border-purple-100 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="bot" size="16"></i> עוזר אישי
+                    </button>
+                    <button onclick="showTab('admin', this)" class="nav-btn px-4 py-2 rounded-xl bg-white text-red-500 border border-red-100 flex items-center gap-2 text-sm font-bold">
                         <i data-lucide="lock" size="16"></i> ניהול
                     </button>
                 </nav>
             </div>
         </header>
 
-        <!-- Main Content Area -->
         <main>
-            <!-- Home Tab -->
+            <!-- Home -->
             <section id="home" class="tab-content active">
                 <div class="glass-card p-12 text-center mb-8">
-                    <h2 class="text-5xl font-black text-purple-600 mb-4 uppercase">WELCOME</h2>
-                    <p class="text-2xl font-bold text-pink-500 italic">ברוכים הבאים לאתר הרשמי שלי!</p>
+                    <h2 class="text-5xl font-black text-purple-600 mb-4">WELCOME SHILI</h2>
+                    <p class="text-2xl font-bold text-pink-500">היי שילי! כאן תוכלי לעשות הכל - לעצב אוואטר, לשחק עם טוי ולהצטלם עם מפורסמים!</p>
                 </div>
-                <div id="announcements-container" class="space-y-4">
-                    <div class="flex items-center gap-2 px-4">
-                        <i data-lucide="megaphone" class="text-pink-500"></i>
-                        <h3 class="text-xl font-black text-gray-700">הכרזות אחרונות</h3>
+            </section>
+
+            <!-- Admin (Locked) -->
+            <section id="admin" class="tab-content">
+                <div class="glass-card p-10 space-y-6 border-2 border-red-200">
+                    <div id="admin-lock-screen" class="text-center py-10">
+                        <i data-lucide="shield-alert" size="64" class="mx-auto text-red-400 mb-4"></i>
+                        <h2 class="text-3xl font-black text-red-600 mb-4">אזור ניהול סגור</h2>
+                        <p class="font-bold text-gray-600 mb-6">נא להזין קוד סודי כדי להיכנס:</p>
+                        <input type="password" id="admin-pass" class="p-4 rounded-2xl border-2 border-red-100 text-center text-2xl tracking-widest outline-none mb-4" maxlength="4">
+                        <button onclick="checkAdmin()" class="block mx-auto bg-red-600 text-white font-black px-8 py-3 rounded-2xl shadow-lg hover:bg-red-700 transition-colors">כניסה למנהלת</button>
                     </div>
-                    <div id="announcement-list">
-                        <!-- Announcements will be injected here -->
+
+                    <div id="admin-content" class="hidden space-y-8">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-3xl font-black text-red-600">שלום שילת המנהלת! 👑</h2>
+                            <button onclick="logoutAdmin()" class="text-gray-400 hover:text-red-500 font-bold underline">יציאה</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white p-6 rounded-3xl shadow-md text-center">
+                                <h3 class="font-bold text-gray-400 uppercase text-xs">Users</h3>
+                                <p class="text-3xl font-black text-red-600">1,248</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-3xl shadow-md text-center">
+                                <h3 class="font-bold text-gray-400 uppercase text-xs">System Alerts</h3>
+                                <p class="text-3xl font-black text-red-600">Active</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-3xl shadow-md text-center">
+                                <h3 class="font-bold text-gray-400 uppercase text-xs">Engagement</h3>
+                                <p class="text-3xl font-black text-red-600">98%</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <h3 class="font-black text-xl text-gray-700">עדכון מערכת גלובלי:</h3>
+                            <textarea placeholder="מה ההודעה שתרצי שכולם יראו?" class="w-full p-4 rounded-2xl border-2 border-red-50 outline-none font-bold text-right h-24"></textarea>
+                            <button onclick="alert('הודעה נשלחה!')" class="w-full bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl">פרסמי עכשיו!</button>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Avatar Tab -->
+            <!-- Avatar -->
             <section id="avatar" class="tab-content">
                 <div class="glass-card p-8 flex flex-col lg:flex-row gap-12">
-                    <div class="flex-1 bg-pink-50 rounded-3xl p-8 flex justify-center items-center shadow-inner">
-                        <div id="avatar-preview">
-                            <svg class="avatar-svg" viewBox="0 0 100 120">
-                                <circle id="av-skin" cx="50" cy="55" r="22" fill="#FFDBAC" />
-                                <path id="av-neck" d="M35 85 Q50 75 65 85 L70 120 L30 120 Z" fill="#FFDBAC" />
-                                <g id="av-eyes"><circle cx="43" cy="55" r="3" fill="black" /><circle cx="57" cy="55" r="3" fill="black" /></g>
-                                <path d="M45 68 Q50 72 55 68" stroke="black" fill="none" strokeWidth="1.5" />
-                                <g id="av-hair-layer"></g>
-                                <g id="av-clothing-layer"></g>
-                                <g id="av-accessory-layer"></g>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex-1 space-y-6">
-                        <h2 class="text-2xl font-black text-purple-700">האוואטר של שילי</h2>
-                        <div class="space-y-4">
-                            <p class="font-bold flex items-center gap-2"><i data-lucide="scissors" size="16"></i> שיער:</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="setAvatar('hair', 'long')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">ארוך</button>
-                                <button onclick="setAvatar('hair', 'short')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">קצר</button>
-                                <button onclick="setAvatar('hair', 'curly')" class="px-4 py-2 bg-purple-100 rounded-xl text-xs font-bold">מתולתל</button>
-                            </div>
-                            <p class="font-bold flex items-center gap-2"><i data-lucide="shirt" size="16"></i> בגד:</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="setAvatar('clothing', 'hoodie')" class="px-4 py-2 bg-pink-100 rounded-xl text-xs font-bold">קפוצ'ון</button>
-                                <button onclick="setAvatar('clothing', 'dress')" class="px-4 py-2 bg-pink-100 rounded-xl text-xs font-bold">שמלה</button>
-                            </div>
-                            <p class="font-bold flex items-center gap-2"><i data-lucide="gem" size="16"></i> אקססוריז:</p>
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="setAvatar('accessory', 'crown')" class="px-4 py-2 bg-yellow-100 rounded-xl text-xs font-bold">כתר</button>
-                                <button onclick="setAvatar('accessory', 'glasses')" class="px-4 py-2 bg-yellow-100 rounded-xl text-xs font-bold">משקפיים</button>
-                                <button onclick="setAvatar('accessory', 'none')" class="px-4 py-2 bg-gray-100 rounded-xl text-xs font-bold">בלי</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Dog Tab -->
-            <section id="dog" class="tab-content">
-                <div class="glass-card p-8 flex flex-col lg:flex-row gap-12">
-                    <div class="flex-1 bg-blue-50 rounded-3xl p-8 flex justify-center items-center">
-                        <svg class="dog-svg" viewBox="0 0 100 100">
-                            <ellipse cx="50" cy="70" rx="30" ry="25" fill="#E5E7EB" id="dog-body" />
-                            <circle cx="50" cy="45" r="25" fill="#E5E7EB" id="dog-head" />
-                            <circle cx="40" cy="40" r="3" fill="black" />
-                            <circle cx="60" cy="40" r="3" fill="black" />
-                            <circle cx="50" cy="48" r="3" fill="black" />
-                            <path d="M30 60 Q50 65 70 60" stroke="#EF4444" fill="none" stroke-width="4" />
-                            <g id="dog-hat-layer"></g>
+                    <div class="flex-1 bg-gradient-to-b from-pink-50 to-purple-50 rounded-3xl p-8 flex justify-center items-center shadow-inner relative min-h-[400px]">
+                        <svg class="avatar-svg" viewBox="0 0 100 120">
+                            <!-- Skin -->
+                            <circle cx="50" cy="55" r="22" fill="#FFDBAC" />
+                            <path d="M35 85 Q50 75 65 85 L70 120 L30 120 Z" fill="#FFDBAC" />
+                            <!-- Face -->
+                            <g id="av-face">
+                                <circle cx="43" cy="55" r="2" fill="black" />
+                                <circle cx="57" cy="55" r="2" fill="black" />
+                                <path d="M45 65 Q50 68 55 65" stroke="black" fill="none" />
+                            </g>
+                            <!-- Dynamic Layers -->
+                            <g id="av-hair-layer"></g>
+                            <g id="av-clothing-layer"></g>
+                            <g id="av-accessory-layer"></g>
                         </svg>
                     </div>
-                    <div class="flex-1 space-y-6">
-                        <h2 class="text-2xl font-black text-blue-700">טוי המתוק 🐾</h2>
+                    <div class="flex-1 space-y-6 overflow-y-auto max-h-[600px] p-2">
+                        <h2 class="text-2xl font-black text-purple-700">מעצבת האוואטרים 🎨</h2>
+                        
                         <div class="space-y-4">
-                            <p class="font-bold">צבע פרווה:</p>
-                            <div class="flex gap-2">
-                                <button onclick="setDog('color', '#E5E7EB')" class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></button>
-                                <button onclick="setDog('color', '#D2B48C')" class="w-8 h-8 rounded-full bg-yellow-700 border-2 border-white"></button>
-                                <button onclick="setDog('color', '#8B4513')" class="w-8 h-8 rounded-full bg-amber-900 border-2 border-white"></button>
+                            <p class="font-black text-pink-500 flex items-center gap-2"><i data-lucide="scissors" size="18"></i> שיער:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('hair', 'long')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">ארוך חום</button>
+                                <button onclick="setAvatar('hair', 'ponytail')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">קוקו גבוה</button>
+                                <button onclick="setAvatar('hair', 'shilat')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">מתולתל</button>
                             </div>
-                            <p class="font-bold">כובעים:</p>
-                            <div class="flex gap-2">
-                                <button onclick="setDog('hat', 'crown')" class="px-4 py-2 bg-blue-100 rounded-xl font-bold">כתר</button>
-                                <button onclick="setDog('hat', 'cool')" class="px-4 py-2 bg-blue-100 rounded-xl font-bold">משקפיים</button>
-                                <button onclick="setDog('hat', 'none')" class="px-4 py-2 bg-gray-100 rounded-xl font-bold">בלי</button>
+
+                            <p class="font-black text-pink-500 flex items-center gap-2"><i data-lucide="shirt" size="18"></i> ביגוד:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('clothing', 'hoodie')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">קפוצ'ון ורוד</button>
+                                <button onclick="setAvatar('clothing', 'dress')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">שמלת נסיכה</button>
+                                <button onclick="setAvatar('clothing', 'uniform')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">תלבושת אולפנה</button>
+                            </div>
+
+                            <p class="font-black text-pink-500 flex items-center gap-2"><i data-lucide="sparkles" size="18"></i> אקססוריז:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="setAvatar('accessory', 'glasses')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">משקפיים</button>
+                                <button onclick="setAvatar('accessory', 'crown')" class="btn-option bg-white px-4 py-2 rounded-xl text-sm font-bold">כתר נוצץ</button>
+                                <button onclick="setAvatar('accessory', 'none')" class="btn-option bg-gray-100 px-4 py-2 rounded-xl text-sm font-bold">ללא</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Rating Tab -->
-            <section id="rating" class="tab-content">
-                <div class="glass-card p-10 space-y-8">
-                    <div class="text-center">
-                        <h2 class="text-3xl font-black text-yellow-600">דרגו את האתר שלי ⭐</h2>
-                        <p class="text-gray-500 font-bold">הדעה שלכם חשובה לי מאוד!</p>
+            <!-- Dog (Toy) -->
+            <section id="dog" class="tab-content">
+                <div class="glass-card p-8 flex flex-col lg:flex-row gap-12">
+                    <div class="flex-1 bg-blue-50 rounded-3xl p-8 flex justify-center items-center relative overflow-hidden">
+                        <svg class="dog-svg" viewBox="0 0 100 100">
+                            <!-- Body -->
+                            <circle cx="50" cy="65" r="25" fill="#E5E7EB" />
+                            <!-- Head -->
+                            <circle cx="50" cy="40" r="20" fill="#E5E7EB" id="dog-head" />
+                            <!-- Features -->
+                            <circle cx="43" cy="38" r="2" fill="black" />
+                            <circle cx="57" cy="38" r="2" fill="black" />
+                            <circle cx="50" cy="45" r="3" fill="black" />
+                            <path d="M45 52 Q50 55 55 52" stroke="black" fill="none" id="dog-mouth" />
+                            <!-- Toy Accessories -->
+                            <g id="dog-extra-layer"></g>
+                            <g id="dog-hat-layer"></g>
+                        </svg>
+                        <div id="dog-status" class="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-full font-black text-blue-600 shadow-sm">טוי רגוע 🦴</div>
                     </div>
-
-                    <div class="max-w-md mx-auto bg-yellow-50/50 p-8 rounded-3xl space-y-6 border border-yellow-100">
-                        <div class="flex justify-center gap-2 star-rating" id="star-input">
-                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(1)"></i>
-                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(2)"></i>
-                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(3)"></i>
-                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(4)"></i>
-                            <i data-lucide="star" class="star text-gray-300" onclick="setRating(5)"></i>
+                    <div class="flex-1 space-y-6">
+                        <h2 class="text-2xl font-black text-blue-700">העולם של טוי 🐾</h2>
+                        <p class="font-bold text-gray-600">מה נרצה לעשות עם טוי עכשיו?</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="updateDog('crown', 'מלך העולם! 👑')" class="bg-blue-100 p-4 rounded-2xl font-bold flex flex-col items-center gap-2">
+                                <span>👑 כתר לראש</span>
+                            </button>
+                            <button onclick="updateDog('bone', 'טוי שמח! 🦴')" class="bg-blue-100 p-4 rounded-2xl font-bold flex flex-col items-center gap-2">
+                                <span>🦴 תן לו עצם</span>
+                            </button>
+                            <button onclick="updateDog('glasses', 'טוי חכם! 🤓')" class="bg-blue-100 p-4 rounded-2xl font-bold flex flex-col items-center gap-2">
+                                <span>👓 משקפי שמש</span>
+                            </button>
+                            <button onclick="updateDog('heart', 'טוי אוהב אותך! ❤️')" class="bg-blue-100 p-4 rounded-2xl font-bold flex flex-col items-center gap-2">
+                                <span>❤️ חיבוק חם</span>
+                            </button>
+                            <button onclick="updateDog('reset', 'טוי רגוע 🐾')" class="bg-gray-100 p-4 rounded-2xl font-bold col-span-2">
+                                איפוס הכל
+                            </button>
                         </div>
-                        <textarea id="rating-comment" placeholder="מה חשבתם על האתר?..." class="w-full p-4 rounded-2xl border-2 border-yellow-100 h-24 focus:ring-2 focus:ring-yellow-300 font-bold outline-none"></textarea>
-                        <button onclick="submitRating()" class="w-full bg-yellow-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-yellow-600 transition-colors">שליחת דירוג!</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jokes -->
+            <section id="jokes" class="tab-content">
+                <div class="glass-card p-10 space-y-6">
+                    <h2 class="text-3xl font-black text-center text-orange-600">מעבדת הצחוק 😂</h2>
+                    <div class="flex flex-col items-center gap-4">
+                        <div id="joke-preview" class="w-full max-w-md aspect-video bg-orange-50 rounded-3xl border-4 border-dashed border-orange-200 flex items-center justify-center overflow-hidden">
+                            <i data-lucide="image" size="48" class="text-orange-200"></i>
+                        </div>
+                        <input type="file" id="joke-file" accept="image/*" class="hidden" onchange="handleImage(this, 'joke-preview')">
+                        <button onclick="document.getElementById('joke-file').click()" class="bg-orange-100 text-orange-600 px-6 py-3 rounded-2xl font-bold">העלאת תמונה</button>
+                        <input type="text" id="joke-prompt" placeholder="מה לעשות מצחיק?" class="w-full p-4 rounded-2xl border-2 border-orange-100 outline-none text-right font-bold">
+                        <button onclick="processAI('joke')" id="joke-btn" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl shadow-lg">תעשה לי משהו מצחיק!</button>
+                    </div>
+                    <div id="joke-result-box" class="hidden"><img id="joke-result-img" class="w-full rounded-3xl shadow-xl"></div>
+                </div>
+            </section>
+
+            <!-- Selfie (New Feature: Upload & Gen) -->
+            <section id="selfie" class="tab-content">
+                <div class="glass-card p-10 space-y-6">
+                    <h2 class="text-3xl font-black text-center text-indigo-700 font-bold">סלפי עם מפורסמים 📸</h2>
+                    <p class="text-center font-bold text-gray-500">העלי תמונה שלך, וכתבי עם מי את רוצה להיות בסלפי!</p>
+                    
+                    <div class="flex flex-col items-center gap-4">
+                        <div id="selfie-user-preview" class="w-40 h-40 bg-indigo-50 rounded-full border-4 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                            <i data-lucide="user" size="32" class="text-indigo-200"></i>
+                        </div>
+                        <input type="file" id="selfie-file" accept="image/*" class="hidden" onchange="handleImage(this, 'selfie-user-preview')">
+                        <button onclick="document.getElementById('selfie-file').click()" class="bg-indigo-100 text-indigo-600 px-6 py-2 rounded-full font-bold">העלאת תמונה שלי</button>
                     </div>
 
                     <div class="space-y-4">
-                        <h3 class="text-xl font-black text-gray-700">מה אחרים אמרו:</h3>
-                        <div id="ratings-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p class="text-gray-400 font-bold text-center col-span-full py-4 italic">עדיין אין דירוגים, תהיו הראשונים לדרג!</p>
+                        <input type="text" id="celeb-name" placeholder="שם המפורסם (למשל: אנה זק, נועה קירל...)" class="w-full p-4 rounded-2xl border-2 border-indigo-100 outline-none text-right font-bold">
+                        <button onclick="processAI('selfie')" id="selfie-btn" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-xl">צור סלפי חלומות!</button>
+                    </div>
+
+                    <div id="selfie-result-box" class="hidden mt-4 relative min-h-[300px]">
+                        <div id="selfie-loading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/70 rounded-3xl z-10">
+                            <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+                            <p class="font-black text-indigo-600">עורכים את הסלפי שלך...</p>
                         </div>
+                        <img id="selfie-result-img" class="w-full rounded-3xl shadow-2xl">
                     </div>
                 </div>
             </section>
 
-            <!-- Sounds Tab -->
-            <section id="sounds" class="tab-content">
-                <div class="glass-card p-10">
-                    <h2 class="text-3xl font-black text-center mb-8 text-purple-700">רגע של שקט 🧘‍♀️</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <button onclick="toggleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', this)" class="sound-btn flex items-center justify-between p-6 bg-white rounded-3xl shadow-md border-2 border-transparent hover:border-purple-200 transition-all">
-                            <div class="flex items-center gap-4">
-                                <div class="p-4 bg-blue-100 text-blue-600 rounded-2xl"><i data-lucide="cloud-rain"></i></div>
-                                <span class="font-black text-lg">גשם מרגיע</span>
-                            </div>
-                            <i data-lucide="play" class="play-icon"></i>
-                        </button>
-                        <button onclick="toggleAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', this)" class="sound-btn flex items-center justify-between p-6 bg-white rounded-3xl shadow-md border-2 border-transparent hover:border-purple-200 transition-all">
-                            <div class="flex items-center gap-4">
-                                <div class="p-4 bg-cyan-100 text-cyan-600 rounded-2xl"><i data-lucide="waves"></i></div>
-                                <span class="font-black text-lg">גלי ים</span>
-                            </div>
-                            <i data-lucide="play" class="play-icon"></i>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Admin Tab -->
-            <section id="admin" class="tab-content">
-                <div id="admin-login" class="glass-card p-10 max-w-md mx-auto text-center space-y-6">
-                    <i data-lucide="lock" size="48" class="mx-auto text-purple-200"></i>
-                    <h2 class="text-2xl font-black text-purple-700">כניסת עורכת</h2>
-                    <input type="password" id="admin-pass" placeholder="הקישי סיסמה..." class="w-full p-4 rounded-2xl border-2 border-purple-50 text-center font-bold">
-                    <button onclick="checkAdmin()" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-black shadow-lg">כניסה!</button>
-                </div>
-                <div id="admin-panel" class="glass-card p-10 max-w-2xl mx-auto hidden space-y-8">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-3xl font-black text-purple-700 flex items-center gap-2">ניהול האתר <i data-lucide="unlock" class="text-green-500"></i></h2>
-                        <button onclick="logout()" class="text-gray-400 font-bold bg-gray-100 px-4 py-2 rounded-full">יציאה</button>
-                    </div>
-                    <div class="bg-pink-50 p-6 rounded-3xl space-y-4">
-                        <label class="block font-black text-pink-700">כתבי הכרזה חדשה:</label>
-                        <textarea id="new-ann-text" class="w-full p-4 rounded-2xl border-none h-24" placeholder="מה תרצי לכתוב?"></textarea>
-                        <button onclick="addAnnouncement()" class="w-full bg-pink-500 text-white font-black py-4 rounded-2xl">פרסום!</button>
+            <!-- AI Assistant -->
+            <section id="ai-assistant" class="tab-content">
+                <div class="glass-card p-8 space-y-6">
+                    <h2 class="text-3xl font-black text-center text-purple-600">העוזר האישי ✨</h2>
+                    <div id="chat-box" class="h-80 overflow-y-auto bg-white/50 rounded-3xl p-6 flex flex-col gap-4"></div>
+                    <div class="flex gap-2">
+                        <input type="text" id="ai-input" placeholder="שילי, תשאלי אותי משהו..." class="flex-1 p-4 rounded-2xl border-2 border-purple-50 outline-none text-right font-bold">
+                        <button onclick="processAI('chat')" class="bg-purple-600 text-white p-4 rounded-2xl"><i data-lucide="send"></i></button>
                     </div>
                 </div>
             </section>
         </main>
-
-        <footer class="mt-12 text-center text-gray-400 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
-            SHILAT ASSULIN PORTFOLIO 2025 <i data-lucide="heart" size="12" class="text-pink-300"></i>
-        </footer>
     </div>
 
-    <audio id="global-audio" loop></audio>
-
     <script>
-        // State Management
-        let currentRating = 0;
-        let announcements = [{ text: "ברוכים הבאים לאתר החדש שלי! תהנו מהעיצובים!", date: "30/12/2025" }];
-        let ratings = [];
-        const adminPass = "6666";
+        const apiKey = ""; 
+        let currentImageData = null;
 
-        // Initialize Icons
         lucide.createIcons();
 
-        // Navigation
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-purple-600', 'text-white', 'shadow-md');
-                btn.classList.add('bg-white', 'text-purple-500');
-            });
-            event.currentTarget.classList.add('bg-purple-600', 'text-white', 'shadow-md');
-            event.currentTarget.classList.remove('bg-white', 'text-purple-500');
+        function showTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
 
-        // Avatar Logic
-        const hairStyles = {
-            long: '<path d="M30 40 Q50 10 70 40 L75 90 Q50 85 25 90 Z" fill="#4B2C20" />',
-            short: '<path d="M35 35 Q50 15 65 35 L68 50 Q50 45 32 50 Z" fill="#4B2C20" />',
-            curly: '<path d="M30 40 Q35 25 50 25 Q65 25 70 40 Q75 50 70 60 Q65 70 50 70 Q35 70 30 60 Q25 50 30 40" fill="#4B2C20" />'
-        };
-        const clothingStyles = {
-            hoodie: '<path d="M25 85 L75 85 L80 120 L20 120 Z M40 85 L50 100 L60 85" fill="#EC4899" />',
-            dress: '<path d="M35 85 L65 85 L85 140 L15 140 Z" fill="#EC4899" />'
-        };
-        const accStyles = {
-            crown: '<text x="42" y="30" font-size="14">👑</text>',
-            glasses: '<path d="M38 55 H48 M52 55 H62 M48 55 Q50 55 52 55" stroke="black" fill="none" stroke-width="1" />',
-            none: ''
-        };
-
-        function setAvatar(type, value) {
-            if(type === 'hair') document.getElementById('av-hair-layer').innerHTML = hairStyles[value];
-            if(type === 'clothing') document.getElementById('av-clothing-layer').innerHTML = clothingStyles[value];
-            if(type === 'accessory') document.getElementById('av-accessory-layer').innerHTML = accStyles[value];
-        }
-        // Defaults
-        setAvatar('hair', 'long');
-        setAvatar('clothing', 'hoodie');
-
-        // Dog Logic
-        function setDog(type, value) {
-            if(type === 'color') {
-                document.getElementById('dog-body').setAttribute('fill', value);
-                document.getElementById('dog-head').setAttribute('fill', value);
-            }
-            if(type === 'hat') {
-                const layer = document.getElementById('dog-hat-layer');
-                if(value === 'crown') layer.innerHTML = '<text x="40" y="35" font-size="18">👑</text>';
-                else if(value === 'cool') layer.innerHTML = '<text x="35" y="45" font-size="15">🕶️</text>';
-                else layer.innerHTML = '';
-            }
-        }
-
-        // Rating Logic
-        function setRating(val) {
-            currentRating = val;
-            const stars = document.querySelectorAll('#star-input i');
-            stars.forEach((s, i) => {
-                if(i < val) {
-                    s.classList.add('fill-yellow-400', 'text-yellow-400');
-                    s.classList.remove('text-gray-300');
-                } else {
-                    s.classList.remove('fill-yellow-400', 'text-yellow-400');
-                    s.classList.add('text-gray-300');
-                }
-            });
-        }
-
-        function submitRating() {
-            const comment = document.getElementById('rating-comment').value;
-            if(currentRating === 0) return;
-            
-            ratings.unshift({ stars: currentRating, comment: comment, date: "עכשיו" });
-            updateRatingsUI();
-            
-            // Reset
-            currentRating = 0;
-            document.getElementById('rating-comment').value = '';
-            setRating(0);
-        }
-
-        function updateRatingsUI() {
-            const list = document.getElementById('ratings-list');
-            if(ratings.length === 0) return;
-            
-            list.innerHTML = ratings.map(r => `
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm animate-in fade-in">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-black text-purple-600">אורח/ת</span>
-                        <div class="flex text-yellow-400">
-                            ${Array(r.stars).fill('<i data-lucide="star" class="fill-current" size="14"></i>').join('')}
-                        </div>
-                    </div>
-                    <p class="text-gray-600 font-bold">${r.comment}</p>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        // Audio Logic
-        let isPlaying = false;
-        function toggleAudio(url, btn) {
-            const audio = document.getElementById('global-audio');
-            const icon = btn.querySelector('.play-icon');
-            
-            if(audio.src === url && !audio.paused) {
-                audio.pause();
-                icon.setAttribute('data-lucide', 'play');
-            } else {
-                audio.src = url;
-                audio.play();
-                document.querySelectorAll('.play-icon').forEach(i => i.setAttribute('data-lucide', 'play'));
-                icon.setAttribute('data-lucide', 'pause');
-            }
-            lucide.createIcons();
-        }
-
-        // Admin Logic
+        // --- Admin Lock ---
         function checkAdmin() {
             const pass = document.getElementById('admin-pass').value;
-            if(pass === adminPass) {
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
+            if(pass === '6666') {
+                document.getElementById('admin-lock-screen').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+            } else {
+                alert('קוד שגוי! רק שילי יכולה להיכנס!');
             }
         }
-        function logout() {
-            document.getElementById('admin-login').classList.remove('hidden');
-            document.getElementById('admin-panel').classList.add('hidden');
+        function logoutAdmin() {
+            document.getElementById('admin-lock-screen').classList.remove('hidden');
+            document.getElementById('admin-content').classList.add('hidden');
             document.getElementById('admin-pass').value = '';
         }
 
-        function addAnnouncement() {
-            const text = document.getElementById('new-ann-text').value;
-            if(!text) return;
-            announcements.unshift({ text: text, date: "היום" });
-            updateAnnouncementsUI();
-            document.getElementById('new-ann-text').value = '';
+        // --- Avatar System ---
+        function setAvatar(type, val) {
+            const hairLayer = document.getElementById('av-hair-layer');
+            const clothLayer = document.getElementById('av-clothing-layer');
+            const accLayer = document.getElementById('av-accessory-layer');
+
+            if(type === 'hair') {
+                if(val === 'long') hairLayer.innerHTML = '<path d="M28 35 Q50 5 72 35 L75 100 Q50 90 25 100 Z" fill="#4B2C20" />';
+                if(val === 'ponytail') hairLayer.innerHTML = '<circle cx="50" cy="30" r="10" fill="#4B2C20" /><path d="M30 40 Q50 15 70 40 L65 55 Q50 50 35 55 Z" fill="#4B2C20" /><path d="M60 30 Q80 30 75 70" stroke="#4B2C20" stroke-width="8" fill="none" stroke-linecap="round"/>';
+                if(val === 'shilat') hairLayer.innerHTML = '<path d="M30 35 Q50 10 70 35 L75 90 Q50 85 25 90 Z" fill="#8B4513" /><circle cx="35" cy="40" r="5" fill="#8B4513"/><circle cx="65" cy="40" r="5" fill="#8B4513"/><circle cx="30" cy="60" r="5" fill="#8B4513"/><circle cx="70" cy="60" r="5" fill="#8B4513"/>';
+            }
+            if(type === 'clothing') {
+                if(val === 'hoodie') clothLayer.innerHTML = '<path d="M25 85 L75 85 L80 120 L20 120 Z" fill="#F472B6" /><path d="M40 85 L50 95 L60 85" stroke="white" fill="none" />';
+                if(val === 'dress') clothLayer.innerHTML = '<path d="M30 85 L70 85 L85 120 L15 120 Z" fill="#A78BFA" /><circle cx="50" cy="100" r="3" fill="white"/>';
+                if(val === 'uniform') clothLayer.innerHTML = '<path d="M25 85 L75 85 L80 120 L20 120 Z" fill="#1E40AF" /><path d="M35 85 L50 105 L65 85" fill="white"/>';
+            }
+            if(type === 'accessory') {
+                if(val === 'glasses') accLayer.innerHTML = '<rect x="35" cy="52" width="12" height="8" rx="2" fill="none" stroke="black"/><rect x="53" cy="52" width="12" height="8" rx="2" fill="none" stroke="black"/><line x1="47" y1="56" x2="53" y2="56" stroke="black"/>';
+                if(val === 'crown') accLayer.innerHTML = '<path d="M35 35 L40 25 L50 35 L60 25 L65 35 Z" fill="gold" stroke="#B8860B" />';
+                if(val === 'none') accLayer.innerHTML = '';
+            }
         }
 
-        function updateAnnouncementsUI() {
-            const list = document.getElementById('announcement-list');
-            list.innerHTML = announcements.map(a => `
-                <div class="bg-white p-6 rounded-2xl shadow-md border-r-8 border-pink-400 mb-4 flex justify-between items-center">
-                    <div>
-                        <p class="text-lg font-bold text-purple-800">${a.text}</p>
-                        <span class="text-gray-400 text-xs">${a.date}</span>
-                    </div>
-                    <i data-lucide="sparkles" class="text-pink-200"></i>
-                </div>
-            `).join('');
-            lucide.createIcons();
+        // --- Toy System ---
+        function updateDog(action, status) {
+            const hat = document.getElementById('dog-hat-layer');
+            const extra = document.getElementById('dog-extra-layer');
+            const mouth = document.getElementById('dog-mouth');
+            const statusLabel = document.getElementById('dog-status');
+            
+            statusLabel.innerText = status;
+
+            if(action === 'reset') {
+                hat.innerHTML = ''; extra.innerHTML = ''; mouth.setAttribute('d', 'M45 52 Q50 55 55 52');
+                return;
+            }
+            if(action === 'crown') hat.innerHTML = '<text x="40" y="25" font-size="15">👑</text>';
+            if(action === 'bone') extra.innerHTML = '<text x="43" y="60" font-size="12">🦴</text>';
+            if(action === 'glasses') hat.innerHTML = '<text x="41" y="42" font-size="14">🕶️</text>';
+            if(action === 'heart') {
+                extra.innerHTML = '<text x="15" y="40" font-size="15">❤️</text><text x="75" y="50" font-size="10">❤️</text>';
+                mouth.setAttribute('d', 'M43 52 Q50 60 57 52');
+            }
+        }
+
+        // --- AI Processing ---
+        function handleImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentImageData = e.target.result.split(',')[1];
+                    const preview = document.getElementById(previewId);
+                    preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function processAI(type) {
+            if (type === 'joke') {
+                if(!currentImageData) return alert("שילי, תעלי תמונה קודם!");
+                const btn = document.getElementById('joke-btn');
+                const resultBox = document.getElementById('joke-result-box');
+                btn.disabled = true; btn.innerText = "מעבד...";
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            contents: [{ parts: [
+                                {text: `Make this image extremely funny according to this request: ${document.getElementById('joke-prompt').value || 'Surprise me'}. Output ONLY image data.`},
+                                {inlineData: {mimeType: "image/png", data: currentImageData}}
+                            ]}],
+                            generationConfig: {responseModalities: ['IMAGE']}
+                        })
+                    });
+                    const data = await res.json();
+                    const base64 = data.candidates[0].content.parts.find(p => p.inlineData)?.inlineData?.data;
+                    if(base64) {
+                        document.getElementById('joke-result-img').src = `data:image/png;base64,${base64}`;
+                        resultBox.classList.remove('hidden');
+                    }
+                } catch(e) {} finally { btn.disabled = false; btn.innerText = "תעשה לי משהו מצחיק!"; }
+            }
+
+            if (type === 'selfie') {
+                const celeb = document.getElementById('celeb-name').value;
+                if(!celeb || !currentImageData) return alert("צריך גם תמונה שלך וגם שם של מפורסם!");
+                const loading = document.getElementById('selfie-loading');
+                const resultBox = document.getElementById('selfie-result-box');
+                loading.classList.remove('hidden'); resultBox.classList.remove('hidden');
+                
+                try {
+                    const prompt = `A highly realistic photo of the celebrity ${celeb} taking a friendly selfie with the girl from the attached image. They are both smiling and looking at the camera. Cinematic lighting.`;
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            contents: [{ parts: [
+                                {text: prompt},
+                                {inlineData: {mimeType: "image/png", data: currentImageData}}
+                            ]}],
+                            generationConfig: {responseModalities: ['IMAGE']}
+                        })
+                    });
+                    const data = await res.json();
+                    const base64 = data.candidates[0].content.parts.find(p => p.inlineData)?.inlineData?.data;
+                    if(base64) {
+                        document.getElementById('selfie-result-img').src = `data:image/png;base64,${base64}`;
+                    }
+                } catch(e) { alert("משהו לא עבד, נסי שוב!"); } finally { loading.classList.add('hidden'); }
+            }
+
+            if (type === 'chat') {
+                const input = document.getElementById('ai-input');
+                const text = input.value.trim();
+                if(!text) return;
+                const box = document.getElementById('chat-box');
+                box.innerHTML += `<div class="bg-purple-100 self-end p-3 rounded-2xl font-bold ml-10 shadow-sm border border-purple-200">${text}</div>`;
+                input.value = '';
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({contents: [{parts: [{text}]}]})
+                    });
+                    const data = await res.json();
+                    const reply = data.candidates[0].content.parts[0].text;
+                    box.innerHTML += `<div class="bg-white self-start p-3 rounded-2xl font-bold mr-10 shadow-md border border-purple-50">${reply}</div>`;
+                    box.scrollTop = box.scrollHeight;
+                } catch(e) {}
+            }
         }
 
         // Init
-        updateAnnouncementsUI();
-
+        setAvatar('hair', 'shilat');
+        setAvatar('clothing', 'hoodie');
     </script>
 </body>
 </html>
